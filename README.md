@@ -1,6 +1,6 @@
 # Auto AVIF
 
-Automatically generates [AVIF](https://en.wikipedia.org/wiki/AVIF) files when image variations are created. The AVIF image format usually provides better compression efficiency than JPG or WebP formats.
+Automatically generates [AVIF](https://en.wikipedia.org/wiki/AVIF) files when image variations are created. The AVIF image format usually provides better compression efficiency than JPG or WebP formats, in many cases producing image files that are significantly smaller in size while also having fewer visible compression artifacts.
 
 Requires ProcessWire v3.0.236 or newer. 
 
@@ -8,7 +8,7 @@ In order to generate AVIF files your environment must have a version of GD or Im
 
 ## Delayed Image Variations
 
-Generating AVIF files is _very slow_ - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one on request rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
+Generating AVIF files can be _very slow_ - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one on request rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
 
 ## Configuration
 
