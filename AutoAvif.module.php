@@ -21,6 +21,7 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 		if($this->wire()->config->enableAvif !== false) {
 			$this->addHookBefore('Pageimage::size', $this, 'beforePageimageSize', ['priority' => 200]);
 			$this->addHookBefore('Pageimages::delete', $this, 'beforePageimagesDelete');
+			$this->addHookBefore('ProcessPageEditImageSelect::executeVariations', $this, 'beforeExecuteVariations');
 			if($this->createForExisting) {
 				$this->addHookAfter('Pageimage::size', $this, 'afterPageimageSize');
 			}
@@ -138,6 +139,28 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 	}
 
 	/**
+	 * ProcessPageEditImageSelect::executeVariations
+	 * Delete any AVIF files that correspond to variations deleted via ProcessPageEditImageSelect
+	 *
+	 * @param HookEvent $event
+	 */
+	protected function beforeExecuteVariations(HookEvent $event) {
+		/** @var ProcessPageEditImageSelect $ppeis */
+		$ppeis = $event->object;
+		$delete = $this->wire()->input->post('delete');
+		if(is_array($delete) && count($delete)) {
+			$pageimage = $ppeis->getPageimage();
+			$variations = $pageimage->getVariations();
+			foreach($delete as $basename) {
+				$variation = $variations->get($basename);
+				if(!$variation) continue;
+				$avif_filename = $this->getAvifFilename($variation);
+				if(is_file($avif_filename)) $this->wire()->files->unlink($avif_filename);
+			}
+		}
+	}
+
+	/**
 	 * Allow an AVIF file to be created for this Pageimage variation?
 	 *
 	 * @param Pageimage $pageimage
@@ -176,6 +199,12 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 			}
 		}
 
+		/** @var InputfieldFieldset $fs */
+		$fs = $modules->get('InputfieldFieldset');
+		$fs->label = $this->_('AVIF generation settings');
+		$fs->description = $this->_('These settings are passed to the GD/ImageMagick AVIF generation methods.');
+		$inputfields->add($fs);
+
 		/** @var InputfieldInteger $f */
 		$f = $modules->get('InputfieldInteger');
 		$f_name = 'quality';
@@ -185,7 +214,8 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 		$f->min = 1;
 		$f->max = 100;
 		$f->value = $this->$f_name;
-		$inputfields->add($f);
+		$f->columnWidth = 50;
+		$fs->add($f);
 
 		/** @var InputfieldInteger $f */
 		$f = $modules->get('InputfieldInteger');
@@ -196,7 +226,8 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 		$f->min = 0;
 		$f->max = 9;
 		$f->value = $this->$f_name;
-		$inputfields->add($f);
+		$f->columnWidth = 50;
+		$fs->add($f);
 
 		/** @var InputfieldCheckbox $f */
 		$f = $modules->get('InputfieldCheckbox');

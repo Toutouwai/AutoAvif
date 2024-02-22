@@ -8,5 +8,5 @@ $info = array(
 	'href' => 'https://github.com/Toutouwai/AutoAvif',
 	'icon' => 'smile-o',
 	'autoload' => true,
-	'requires' => 'ProcessWire>=3.0.222, PHP>=7.0.0',
+	'requires' => 'ProcessWire>=3.0.236, PHP>=7.0.0',
 );
