@@ -1,14 +1,14 @@
 # Auto AVIF
 
-Automatically generates [AVIF](https://en.wikipedia.org/wiki/AVIF) files when image variations are created. The AVIF image format can provide better compression efficiency than JPG or WebP formats.
+Automatically generates [AVIF](https://en.wikipedia.org/wiki/AVIF) files when image variations are created. The AVIF image format usually provides better compression efficiency than JPG or WebP formats.
 
 Requires ProcessWire v3.0.236 or newer. 
 
-In order to generate AVIF files your environment must have a version of GD or Imagick that supports the AVIF format. If you are using ImageSizerEngineGD (the ProcessWire default) then this means you need PHP 8.1 or newer. If you want to use Imagick to generate AVIF files then you must have the core ImageSizerEngineIMagick module installed. The module attempts to detect if your environment supports AVIF and warns you on the module config screen if it finds a problem.
+In order to generate AVIF files your environment must have a version of GD or Imagick that supports the AVIF format. If you are using ImageSizerEngineGD (the ProcessWire default) then this means you need PHP 8.1 or newer and an OS that has AVIF support. If you want to use Imagick to generate AVIF files then you must have the core ImageSizerEngineIMagick module installed. The module attempts to detect if your environment supports AVIF and warns you on the module config screen if it finds a problem.
 
 ## Delayed Image Variations
 
-Generating AVIF files is _very slow_ - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
+Generating AVIF files is _very slow_ - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one on request rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
 
 ## Configuration
 
@@ -30,11 +30,9 @@ Two additions to the `.htaccess` file in the site root are needed.
 
 ```
 # AutoAvif
-# Check if browser supports AVIF images
 RewriteCond %{HTTP_ACCEPT} image/avif
-# Check if AVIF replacement image exists
+RewriteCond %{QUERY_STRING} !original=1
 RewriteCond %{DOCUMENT_ROOT}/$1.avif -f
-# Serve AVIF image instead
 RewriteRule (.+)\.(jpe?g|png|gif)$ $1.avif [T=image/avif,E=REQUEST_image,L]
 ```
 
@@ -75,3 +73,7 @@ $wire->addHookAfter('AutoAvif::allowAvif', function(HookEvent $event) {
 If you delete a variation via the "Variations > Delete Checked" option for an image in an Images field then any corresponding AVIF file is also deleted.
 
 And if you delete an image then any AVIF files for that image are also deleted.
+
+### Saving an original variation file
+
+Because requests to images are being rewritten to matching AVIF files where they exist, if you try to save `example.500x500.jpg` from your browser you will actually save `example.500x500.avif`. You can prevent the rewrite and load/save the original variation file by adding "original=1" to the query string in the image URL, e.g. `example.500x500.jpg?original=1`.

@@ -109,7 +109,7 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 			$original = $pageimage->getOriginal();
 			$options['forceNew'] = true;
 			// Set noDelay option in case DelayedImageVariations module is installed
-			//$options['noDelay'] = true;
+			$options['noDelay'] = true;
 			$original->size($width, $height, $options);
 		}
 	}
@@ -196,6 +196,14 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 		} else {
 			if(!function_exists('imageavif')) {
 				$this->wire()->warning($this->_('The installed version of GD does not support AVIF format.'));
+			} else {
+				set_error_handler(function($errorNumber, $errorString) {
+					$errorString = trim($errorString);
+					$this->wire()->warning($errorString, 'noGroup');
+				}, E_WARNING);
+				$test = imagecreatefromavif($this->wire()->config->paths->$this . 'test.avif');
+				if(!$test) $this->wire()->warning($this->_('Your environment does not support AVIF format.'));
+				restore_error_handler();
 			}
 		}
 
