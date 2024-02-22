@@ -8,17 +8,17 @@ In order to generate AVIF files your environment must have a version of GD or Im
 
 ## Delayed Image Variations
 
-Generating AVIF files is *very slow* - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
+Generating AVIF files is _very slow_ - much slower than creating an equivalent JPG or WebP file. If you want to use this module it's highly recommended that you also install the [Delayed Image Variations](https://processwire.com/modules/delayed-image-variations/) module so that image variations are created one by one rather than all at once before a page renders. Otherwise it's likely that pages with more than a few images will timeout before the AVIF files can be generated.
 
 ## Configuration
 
 On the module configuration screen are settings for "Quality (1 – 100)" and "Speed (0 – 9)". These are parameters for the underlying GD and Imagick AVIF generation methods.
 
-There is also an option to create AVIF files for existing image variations instead of only new image variations. If you enable this option then all image variations on your site will be recreated the next time they are requested.
+There is also an option to create AVIF files for existing image variations instead of only new image variations. If you enable this option then _all image variations on your site will be recreated_ the next time they are requested. As per the earlier note, the process of recreating the image variations and the AVIF files is likely to be slow.
 
 ## Usage
 
-Just install the module, choose the configuration settings you want, and make the changes to the `.htaccess` file in the site root described in the next section.
+Just install the module, choose the configuration settings you want, and make the additions to the `.htaccess` file in the site root described in the next section.
 
 ### How the AVIF files are served
 
@@ -52,7 +52,7 @@ RewriteRule (.+)\.(jpe?g|png|gif)$ $1.avif [T=image/avif,E=REQUEST_image,L]
 
 ### Opting out of AVIF generation for specific images
 
-If you want to prevent an AVIF file being generated and served for a particular image you can hook `AutoAvif::allowAvif` and set the event return to false. AutoAVIF generates an AVIF file when an image variation is being created so the hookable method receives some arguments relating to the resizing of the requested variation.
+If you want to prevent an AVIF file being generated and served for a particular image you can hook `AutoAvif::allowAvif` and set the event return to false. AutoAvif generates an AVIF file when an image variation is being created so the hookable method receives some arguments relating to the resizing of the requested variation.
 
 Example:
 
