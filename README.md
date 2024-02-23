@@ -77,3 +77,22 @@ And if you delete an image then any AVIF files for that image are also deleted.
 ### Saving an original variation file
 
 Because requests to images are being rewritten to matching AVIF files where they exist, if you try to save `example.500x500.jpg` from your browser you will actually save `example.500x500.avif`. You can prevent the rewrite and load/save the original variation file by adding "original=1" to the query string in the image URL, e.g. `example.500x500.jpg?original=1`.
+
+### Deleting all AVIF files
+
+If needed you can execute this code snippet to delete all AVIF files sitewide.
+
+```php
+$iterator = new \DirectoryIterator($config->paths->files);
+foreach($iterator as $dir) {
+    if($dir->isDot() || !$dir->isDir()) continue;
+    $sub_iterator = new \DirectoryIterator($dir->getPathname());
+    foreach($sub_iterator as $file) {
+        if($file->isDot() || !$file->isFile()) continue;
+        if($file->getExtension() === 'avif') {
+            unlink($file->getPathname());
+            echo 'Deleted: ' . $file->getFilename() . '<br>';
+        }
+    }
+}
+```
