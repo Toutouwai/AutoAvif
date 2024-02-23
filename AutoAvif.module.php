@@ -108,8 +108,6 @@ class AutoAvif extends WireData implements Module, ConfigurableModule {
 		if(!is_file($avif_filename)) {
 			$original = $pageimage->getOriginal();
 			$options['forceNew'] = true;
-			// Set noDelay option in case DelayedImageVariations module is installed
-			$options['noDelay'] = true;
 			$original->size($width, $height, $options);
 		}
 	}
